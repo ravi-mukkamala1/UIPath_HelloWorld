@@ -1,0 +1,15 @@
+trigger:
+  - master
+variables:
+  - name: agent.preferPowerShellOnContainers
+    value: "True"
+
+pool:
+  vmImage: 'windows-latest'
+container:
+  image: dwfmt.azurecr.io/ravimukkamaladwfmt:2
+  endpoint: dwfmt
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
