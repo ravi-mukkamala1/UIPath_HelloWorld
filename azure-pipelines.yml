@@ -1,3 +1,4 @@
+
 trigger:
   - master
 variables:
@@ -5,7 +6,7 @@ variables:
     value: "True"
     
 pool:
-      vmImage: "windows-latest"
+      vmImage: "windows-2019"
 container:
       image: dwfmt.azurecr.io/ravimukkamaladwfmt:2
       endpoint: dwfmt
