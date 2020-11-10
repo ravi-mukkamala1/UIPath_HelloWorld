@@ -21,5 +21,5 @@ steps:
       Register-PSRepository -Name UiPath -SourceLocation https://www.myget.org/F/uipath-dev/api/v2
       Install-Module -Repository UiPath -Name UiPath.Powershell -Force
       Import-Module UiPath.Powershell
-      $token = Get-UiPathAuthToken -ClientId $(uatClientId) -UserKey $(uatUserKey) -AccountName $(uatAccountName) -CloudDeployment 'Production' -TenantName $(uatTenantName)
+      $token = Get-UiPathAuthToken -ClientId $('8DEv1AMNXczW3y4U15LL3jYf62jK93n5') -UserKey $('Skhdbztw4pSK0NATkxFuRQAJZe2xDIyWchZ4XvFTq2DEb') -AccountName $('rpawodirocjl') -CloudDeployment 'Production' -TenantName $('RPAWORLDDefault')
       Add-UiPathPackage -PackageFile $(Pipeline.Workspace)\drop\uipath-sample.1.0.$(Build.BuildNumber).nupkg -AuthToken $token
