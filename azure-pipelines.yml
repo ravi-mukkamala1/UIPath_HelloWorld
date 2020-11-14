@@ -1,0 +1,27 @@
+
+trigger:
+  - master
+variables:
+  - group: uipath-cicd
+  - name: agent.preferPowerShellOnContainers
+    value: "True"
+    
+pool:
+      vmImage: "windows-2019"
+container:
+      image: dwfmt.azurecr.io/ravimukkamaladwfmt:2
+      endpoint: dwfmt
+
+steps:
+  - script: C:\UiPath\UiRobot.exe pack $(Build.SourcesDirectory)\project.json -o $(Build.ArtifactStagingDirectory)\ -v 1.0.$(Build.BuildNumber)
+    displayName: "Build the artifact"
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: drop
+  - powershell: |
+      Install-PackageProvider -Name NuGet -Force
+      Register-PSRepository -Name UiPath -SourceLocation https://www.myget.org/F/uipath-dev/api/v2
+      Install-Module -Repository UiPath -Name UiPath.Powershell -Force
+      Import-Module UiPath.Powershell
+      echo $(Build.ArtifactStagingDirectory)
+      $token = Get-UiPathAuthToken -ClientId $(uatClientId) -UserKey $(uatUserKey) -CloudDeployment 'Production' 
+      Add-UiPathPackage -PackageFile $(Build.ArtifactStagingDirectory)\UIPath_HelloWorld.1.0.$(Build.BuildNumber).nupkg -AuthToken $token
