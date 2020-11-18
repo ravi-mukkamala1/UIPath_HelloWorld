@@ -7,36 +7,36 @@ variables:
     value: "True"
     
 stages:
-  -stage: Build
-   displayName: create build artifact
+   -stage: Build
+   displayName: Create build artifact
    jobs:
      -job: BuildArtifact
      pool:
       vmImage: "windows-latest"
-    container:
+     Container:
       image: dwfmt.azurecr.io/ravimukkamaladwfmt:2
       endpoint: dwfmt
 
-steps:
-  - script: C:\UiPath\UiRobot.exe pack $(Build.SourcesDirectory)\project.json -o $(Build.ArtifactStagingDirectory)\ -v 1.0.$(Build.BuildNumber)
-    displayName: "Build the artifact"
-  - publish: $(Build.ArtifactStagingDirectory)
-    artifact: drop
-  - powershell: |
-      Install-PackageProvider -Name NuGet -Force
-      Register-PSRepository -Name UiPath -SourceLocation https://www.myget.org/F/uipath-dev/api/v2
-      Install-Module -Repository UiPath -Name UiPath.Powershell -Force
-      Import-Module UiPath.Powershell
-      echo $(Build.ArtifactStagingDirectory)
-      $token = Get-UiPathAuthToken -ClientId $(uatClientId) -UserKey $(uatUserKey) -CloudDeployment 'Production' 
-      Add-UiPathPackage -PackageFile $(Build.ArtifactStagingDirectory)\UIPath_HelloWorld.1.0.$(Build.BuildNumber).nupkg -AuthToken $token     
-      $json = "{""grant_type"": ""refresh_token"",""client_id"": ""8DEv1AMNXczW3y4U15LL3jYf62jK93n5"",""refresh_token"": ""QRmXGXIFFhZuS75nD6vzcluLEdDJadZqJNiVvSXl4P87D""}"
-      $out = Invoke-WebRequest "https://account.uipath.com/oauth/token" -Method Post -Body $json -ContentType "application/json" -UseBasicParsing
-      $token = $out | ConvertFrom-Json
-      $bearerToken = $token.access_token
-      $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-      $headers.Add("Authorization", "Bearer $bearerToken")
-      $json_body = "{""releaseIds"": [199176]}"
-      Invoke-WebRequest “https://cloud.uipath.com/privatecontract/PrivateContractorDefault/odata/Releases/UiPath.Server.Configuration.OData.UpdateToLatestPackageVersionBulk?OrganizationUnitId=345900” -UseBasicParsing -Method Post -Body $json_body -ContentType “application/json” -Headers $headers
-      $json_body = "{""releaseIds"": [199177]}"
-      Invoke-WebRequest “https://cloud.uipath.com/privatecontract/PrivateContractorDefault/odata/Releases/UiPath.Server.Configuration.OData.UpdateToLatestPackageVersionBulk?OrganizationUnitId=345901” -UseBasicParsing -Method Post -Body $json_body -ContentType “application/json” -Headers $headers
+      steps:
+        - script: C:\UiPath\UiRobot.exe pack $(Build.SourcesDirectory)\project.json -o $(Build.ArtifactStagingDirectory)\ -v 1.0.$(Build.BuildNumber)
+          displayName: "Build the artifact"
+        - publish: $(Build.ArtifactStagingDirectory)
+          artifact: drop
+        - powershell: |
+            Install-PackageProvider -Name NuGet -Force
+            Register-PSRepository -Name UiPath -SourceLocation https://www.myget.org/F/uipath-dev/api/v2
+            Install-Module -Repository UiPath -Name UiPath.Powershell -Force
+            Import-Module UiPath.Powershell
+            echo $(Build.ArtifactStagingDirectory)
+            $token = Get-UiPathAuthToken -ClientId $(uatClientId) -UserKey $(uatUserKey) -CloudDeployment 'Production' 
+            Add-UiPathPackage -PackageFile $(Build.ArtifactStagingDirectory)\UIPath_HelloWorld.1.0.$(Build.BuildNumber).nupkg -AuthToken $token     
+            $json = "{""grant_type"": ""refresh_token"",""client_id"": ""8DEv1AMNXczW3y4U15LL3jYf62jK93n5"",""refresh_token"": ""QRmXGXIFFhZuS75nD6vzcluLEdDJadZqJNiVvSXl4P87D""}"
+            $out = Invoke-WebRequest "https://account.uipath.com/oauth/token" -Method Post -Body $json -ContentType "application/json" -UseBasicParsing
+            $token = $out | ConvertFrom-Json
+            $bearerToken = $token.access_token
+            $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+            $headers.Add("Authorization", "Bearer $bearerToken")
+            $json_body = "{""releaseIds"": [199176]}"
+            Invoke-WebRequest “https://cloud.uipath.com/privatecontract/PrivateContractorDefault/odata/Releases/UiPath.Server.Configuration.OData.UpdateToLatestPackageVersionBulk?OrganizationUnitId=345900” -UseBasicParsing -Method Post -Body $json_body -ContentType “application/json” -Headers $headers
+            $json_body = "{""releaseIds"": [199177]}"
+            Invoke-WebRequest “https://cloud.uipath.com/privatecontract/PrivateContractorDefault/odata/Releases/UiPath.Server.Configuration.OData.UpdateToLatestPackageVersionBulk?OrganizationUnitId=345901” -UseBasicParsing -Method Post -Body $json_body -ContentType “application/json” -Headers $headers
